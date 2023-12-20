@@ -1,13 +1,11 @@
-import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "./App.css";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { Navbar } from "./components/Navbar";
-import { Login } from "./components/Login";
-import Home from "./components/Home";
-import { Users } from "./components/Users";
-import Posting from "./components/Posting";
+import Home from "./components/Article/Home";
+import { Users } from "./components/User/Users";
+import Posting from "./components/Article/Posting";
+import { TempNav } from "./components/TempNav";
 
 function App() {
   // const setToken = (data) => {
@@ -30,7 +28,7 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navbar />}>
+          <Route path="/" element={<TempNav />}>
             <Route index element={<Home />} />
             <Route path="/users" element={<Users />} />
             <Route path="/items" element={<Posting />} />

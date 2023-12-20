@@ -1,39 +1,53 @@
 import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import axios from "axios";
+import { addPosting } from "../../actions/articleAction";
 
 const Posting = () => {
-  const [item, setItem] = useState({
+  const { addPostingResult, addPostingError } = useSelector(
+    (state) => state.articleReducer
+  );
+  const { register, handleSubmit, reset } = useForm();
+  const dispatch = useDispatch();
+
+  const [article, setArticle] = useState({
     title: "",
     content: "",
     post: "",
     image: "",
   });
-  const [test, setTest] = useState(false);
 
-  const createHandler = (e) => {
-    setItem({ ...item, [e.target.name]: e.target.value });
-  };
+  const [isAddArticle, setIsAddArticle] = useState(false);
 
-  const insert = async () => {
-    try {
-      await axios({
-        method: "POST",
-        url: "http://localhost:3500/items/create",
-        data: item,
-      });
-      Swal.fire("Create Data Berhasil!", "This is button handler", "success");
-      setTest(!test);
-    } catch (e) {
-      console.log(e);
-    }
+  const handleSavePosting = (data) => {
+    const dataJson = {
+      title: data.title,
+      content: data.content,
+      post: data.post,
+      image: data.image,
+    };
+    setIsAddArticle(true);
+    dispatch(addPosting(dataJson));
   };
 
   useEffect(() => {
-    // Swal.fire("Create Data Berhasil!", "This is button handler", "success");
-  }, [test]);
-
-  console.log(item);
+    if (addPostingResult || addPostingError) {
+      if (isAddArticle) {
+        addPostingResult
+          ? Swal.fire({
+              title: "Sukses",
+              icon: "success",
+              text: addPostingResult.message,
+              confirmButtonText: "OK",
+            }).then(() => {
+              reset();
+            })
+          : Swal.fire("Gagal", addPostingError, "error");
+      }
+    }
+    // eslint-disable-next-line
+  }, [addPostingResult, addPostingError]);
 
   return (
     <div>
@@ -41,7 +55,7 @@ const Posting = () => {
         <div className="container">
           <h3>Create Data User</h3>
           <br></br>
-          <form action="" onSubmit={() => insert()}>
+          <form onSubmit={handleSubmit(handleSavePosting)}>
             <div className="form-group mb-3">
               <label>title :</label>
               <input
@@ -49,7 +63,8 @@ const Posting = () => {
                 name="title"
                 className="form-control"
                 placeholder="title"
-                onChange={(e) => createHandler(e)}
+                id="formTitle"
+                {...register("title")}
               />
             </div>
             <div className="form-group mb-3">
@@ -59,7 +74,8 @@ const Posting = () => {
                 name="content"
                 className="form-control"
                 placeholder="content"
-                onChange={(e) => createHandler(e)}
+                id="formContent"
+                {...register("content")}
               />
             </div>
             <div className="form-group mb-3">
@@ -69,7 +85,8 @@ const Posting = () => {
                 name="post"
                 className="form-control"
                 placeholder="post"
-                onChange={(e) => createHandler(e)}
+                id="formPost"
+                {...register("post")}
               />
             </div>
             <div className="form-group mb-3">
@@ -79,7 +96,8 @@ const Posting = () => {
                 name="image"
                 className="form-control"
                 placeholder="image"
-                onChange={(e) => createHandler(e)}
+                id="formImage"
+                {...register("image")}
               />
             </div>
             <button className="btn btn btn-primary mb-5" type="submit">
